@@ -19,10 +19,11 @@ public class MoviePageAdapter extends FragmentStatePagerAdapter {
 
 
     @Override
-    public Fragment getItem(int i) {
+    public Fragment getItem(int fragmentPosition) {
         Fragment fragment = new fragment_movie();
         Bundle bundle = new Bundle();
-        //bundle.putInt(fragment.A);
+        bundle.putInt(fragment_movie.ARG_OBJECT, fragmentPosition);
+        fragment.setArguments(bundle);
         return fragment;
     }
 

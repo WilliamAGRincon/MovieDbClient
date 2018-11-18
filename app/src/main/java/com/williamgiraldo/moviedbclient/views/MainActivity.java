@@ -4,12 +4,16 @@ import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
+import android.view.View;
 
 import com.williamgiraldo.moviedbclient.R;
+import com.williamgiraldo.moviedbclient.api.ApiRepositoryImp;
 import com.williamgiraldo.moviedbclient.images.ui.adapters.MoviePageAdapter;
 
 import butterknife.BindView;
@@ -29,6 +33,7 @@ public class MainActivity extends AppCompatActivity {
     FloatingActionButton fab;
     @BindView(R.id.main_content)
     CoordinatorLayout mainContent;
+    ApiRepositoryImp apiRepositoryImp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +42,31 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         setupAdapter();
+
+        viewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i1) {
+
+            }
+
+            @Override
+            public void onPageSelected(int i) {
+                Log.e("onPageSelected", String.valueOf(i));
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+
+            }
+        });
+
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                        .setAction("Action", null).show();
+            }
+        });
     }
 
     private void setupAdapter() {

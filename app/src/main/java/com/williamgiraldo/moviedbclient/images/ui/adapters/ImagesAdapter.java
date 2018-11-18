@@ -1,40 +1,34 @@
 package com.williamgiraldo.moviedbclient.images.ui.adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
-import com.bumptech.glide.Glide;
 import com.williamgiraldo.moviedbclient.R;
 import com.williamgiraldo.moviedbclient.entities.Image;
+import com.williamgiraldo.moviedbclient.lib.GlideImageLoader;
+import com.williamgiraldo.moviedbclient.models.MoviesModel;
+import com.williamgiraldo.moviedbclient.views.MovieDetailActivity;
 
 import java.util.ArrayList;
 
 public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ViewHolder> {
     //private ArrayList<Image> android;
     private OnItemClickListener listener;
-    private ArrayList<String> dataset;
+    private ArrayList<MoviesModel.ResultsBean> dataset;
+    private GlideImageLoader imageLoader;
     private Context context;
 
-    /*public ImagesAdapter(Context context, ArrayList<Image> android) {
-        this.android = android;
-        this.context = context;
-    }*/
-
-    public ImagesAdapter(OnItemClickListener listener, ArrayList<String> androidString, Context context) {
+    public ImagesAdapter(OnItemClickListener listener, ArrayList<MoviesModel.ResultsBean> androidString, Context context, GlideImageLoader imageLoader) {
         this.listener = listener;
         this.dataset = androidString;
         this.context = context;
+        this.imageLoader = imageLoader;
     }
-
-    /*public ImagesAdapter(Context context, ArrayList<String> android) {
-        this.dataset = android;
-
-        this.context = context;
-    }*/
 
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
@@ -43,12 +37,20 @@ public class ImagesAdapter extends RecyclerView.Adapter<ImagesAdapter.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(ViewHolder viewHolder, int i) {
-        //String imageUrl = Image.BASE_IMAGE_URL.concat(this.dataset.get(i));
-        Glide.with(context).load(this.dataset.get(i))
-                .into(viewHolder.img_android);
-        //ImageLoader imageLoader = null;
-        //imageLoader.load(viewHolder.img_android,android.get(i).getPoster_path());
+    public void onBindViewHolder(ViewHolder viewHolder, final int i) {
+        String imageUrl = Image.POSTER_BASE_IMAGE_URL.concat(this.dataset.get(i).getPoster_path());
+        imageLoader.load(viewHolder.img_android,imageUrl);
+        viewHolder.img_android.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(context, MovieDetailActivity.class);
+                intent.putExtra("title", dataset.get(i).getTitle());
+                intent.putExtra("image", dataset.get(i).getBackdrop_path());
+                intent.putExtra("overview", dataset.get(i).getOverview());
+                intent.putExtra("id", dataset.get(i).getId());
+                context.startActivity(intent);
+            }
+        });
     }
 
     @Override
