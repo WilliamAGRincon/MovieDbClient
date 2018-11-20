@@ -21,6 +21,19 @@ A moviedb Api Key is required in order to run the application, get it here: http
 * images.ui - Includes image interfaces
 * lib - Includes Glide implementation
 * views - Includes activities and fragments
+
 ## Authors
 
 * **William Giraldo** - [WilliamAGRincon](https://github.com/WilliamAGRincon)
+
+## Preguntas
+* En qué consiste el principio de responsabilidad única? Cuál es su propósito?
+  - Respuesta: De todo el alcance de funciones y tareas que pueda poseer un software, solamente se debe asignar una de las posibles           responsabilidades a una clase.
+* Qué características tiene, según su opinión, un “buen” código o código limpio?
+  - Respuesta: 
+  1) Escrito de un humano para un humano, se escribe código limpio no pensando en la computadora, si no, en la persona que mantendrá a      futuro el código.
+  2) Contiene poca o nula ausencia de código repetido
+  3) Se asignan responsabilidades únicas a métodos y clases cortos, objetivos y enfocados en una tarea.
+  4) Contiene una buena identación
+  5) Sus nombres son acordes a la funcionalidad a realizar
+  6) Intuitivo, es posible de donde viene y hacia donde va
