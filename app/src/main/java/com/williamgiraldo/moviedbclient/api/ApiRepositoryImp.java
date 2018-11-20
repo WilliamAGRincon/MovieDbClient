@@ -17,7 +17,7 @@ import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ApiRepositoryImp implements ApiRepositoryView{
-    public static final String API_KEY = "d02f2fa3f664c03a07e09aa5bb6be5cb";
+    public static final String API_KEY = "YOUR API KEY";
     public static final String BASE_URL = "https://api.themoviedb.org";
 
 
