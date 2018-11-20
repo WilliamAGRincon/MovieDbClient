@@ -1,5 +1,8 @@
 package com.williamgiraldo.moviedbclient.images.ui;
 
 public interface ImagesRepository {
-    void getImages();
+    /***
+     * Api Call to moviedb movie category
+     */
+    void getMovieImages();
 }

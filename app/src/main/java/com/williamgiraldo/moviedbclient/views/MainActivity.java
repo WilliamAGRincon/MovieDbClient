@@ -1,19 +1,22 @@
 package com.williamgiraldo.moviedbclient.views;
 
+import android.app.SearchManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.AppBarLayout;
 import android.support.design.widget.CoordinatorLayout;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.design.widget.TabLayout;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
-import android.view.View;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.williamgiraldo.moviedbclient.R;
-import com.williamgiraldo.moviedbclient.api.ApiRepositoryImp;
 import com.williamgiraldo.moviedbclient.images.ui.adapters.MoviePageAdapter;
 
 import butterknife.BindView;
@@ -29,11 +32,8 @@ public class MainActivity extends AppCompatActivity {
     AppBarLayout appbar;
     @BindView(R.id.viewpager)
     ViewPager viewpager;
-    @BindView(R.id.fab)
-    FloatingActionButton fab;
     @BindView(R.id.main_content)
     CoordinatorLayout mainContent;
-    ApiRepositoryImp apiRepositoryImp;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,31 +42,6 @@ public class MainActivity extends AppCompatActivity {
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
         setupAdapter();
-
-        viewpager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-            @Override
-            public void onPageScrolled(int i, float v, int i1) {
-
-            }
-
-            @Override
-            public void onPageSelected(int i) {
-                Log.e("onPageSelected", String.valueOf(i));
-            }
-
-            @Override
-            public void onPageScrollStateChanged(int i) {
-
-            }
-        });
-
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
     }
 
     private void setupAdapter() {
@@ -74,6 +49,7 @@ public class MainActivity extends AppCompatActivity {
                 getString(R.string.main_tab_title_popular),
                 getString(R.string.main_tab_title_toprated),
                 getString(R.string.main_tab_title_upcoming)};
+
         MoviePageAdapter adapter = new MoviePageAdapter(getSupportFragmentManager(),titles);
         viewpager.setAdapter(adapter);
         viewpager.setOffscreenPageLimit(2);
@@ -83,5 +59,25 @@ public class MainActivity extends AppCompatActivity {
         tabs.getTabAt(2).setIcon(R.drawable.ic_today_black_24dp);
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_movie_detail, menu);
+        SearchView search = (SearchView) MenuItemCompat.getActionView(menu.findItem(R.id.action_search));
+        // Associate searchable configuration with the SearchView
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        search.setSearchableInfo(searchManager.getSearchableInfo(new ComponentName(this, SearchableActivity.class)));
+        search.setQueryHint(getResources().getString(R.string.search_hint));
+        return true;
+    }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            Intent intent = new Intent(MainActivity.this,aboutActivity.class);
+            startActivity(intent);
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

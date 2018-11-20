@@ -1,38 +1,28 @@
 package com.williamgiraldo.moviedbclient.views;
 
 
-import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.RequestManager;
 import com.williamgiraldo.moviedbclient.R;
 import com.williamgiraldo.moviedbclient.api.ApiRepositoryImp;
 import com.williamgiraldo.moviedbclient.api.MovieService;
-import com.williamgiraldo.moviedbclient.entities.Image;
-import com.williamgiraldo.moviedbclient.eventbus.MessageEvent;
-import com.williamgiraldo.moviedbclient.images.ui.adapters.ImagesAdapter;
+import com.williamgiraldo.moviedbclient.entities.MoviesModel;
 import com.williamgiraldo.moviedbclient.images.ui.ImagesRepository;
 import com.williamgiraldo.moviedbclient.images.ui.ImagesView;
-import com.williamgiraldo.moviedbclient.lib.GlideImageLoader;
-import com.williamgiraldo.moviedbclient.lib.ImageLoader;
-import com.williamgiraldo.moviedbclient.models.MoviesModel;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
+import com.williamgiraldo.moviedbclient.images.ui.adapters.ImagesAdapter;
+import com.williamgiraldo.moviedbclient.lib.GlideImageLoaderRepositoryImp;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -59,19 +49,11 @@ public class fragment_movie extends Fragment implements ImagesView, ImagesReposi
     ProgressBar progressBar;
     @BindView(R.id.container)
     FrameLayout container;
-    //ApiRepositoryImp apiRepositoryImp = new ApiRepositoryImp("popular",1);
-
-    //List<String> itemsImage = new ArrayList<String>();
-    List<Image> itemsImage = new ArrayList<Image>();
-    //private ArrayList<String> itemsImage;
+    Bundle bundle;
+    @BindView(R.id.txtView_fragment_content_error)
+    TextView txtViewFragmentContentError;
 
     public fragment_movie() {
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        EventBus.getDefault().register(this);
     }
 
     @Override
@@ -82,8 +64,7 @@ public class fragment_movie extends Fragment implements ImagesView, ImagesReposi
         unbinder = ButterKnife.bind(this, view);
         setRetainInstance(true);
         initViews();
-        getImages();
-        //apiRepositoryImp.apiCall();
+        getMovieImages();
         return view;
     }
 
@@ -98,6 +79,7 @@ public class fragment_movie extends Fragment implements ImagesView, ImagesReposi
 
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(layoutManager);
+        bundle = getArguments();
     }
 
 
@@ -118,78 +100,56 @@ public class fragment_movie extends Fragment implements ImagesView, ImagesReposi
     }
 
     @Override
-    public void onError(String error) { 
+    public void onError(String error) {
         Snackbar.make(container, error, Snackbar.LENGTH_SHORT).show();
     }
 
     @Override
-    public void onItemClick(Image image) {
-        Intent intent = new Intent(getContext(),MovieDetailActivity.class);
-        intent.putExtra("Hola", image.getId());
-        startActivity(intent);
-    }
+    public void getMovieImages() {
+        String movie_category;
+        if (bundle.getInt(ARG_OBJECT) == 0) {
+            movie_category = "popular";
+        } else if (bundle.getInt(ARG_OBJECT) == 1) {
+            movie_category = "top_rated";
+        } else {
+            movie_category = "upcoming";
+        }
 
-    @Override
-    public void getImages() {
         Retrofit retrofit = new Retrofit.Builder()
-                .baseUrl("https://api.themoviedb.org")
+                .baseUrl(ApiRepositoryImp.BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
 
+        showProgressBar();
         MovieService movieService = retrofit.create(MovieService.class);
         Call<MoviesModel> call =
-                movieService.getMovies("popular",
-                        "d02f2fa3f664c03a07e09aa5bb6be5cb",
+                movieService.getMovies(movie_category,
+                        ApiRepositoryImp.API_KEY,
                         "es",
                         1);
 
         call.enqueue(new Callback<MoviesModel>() {
             @Override
             public void onResponse(Call<MoviesModel> call, Response<MoviesModel> response) {
-                //EventBus.getDefault().post(new MessageEvent(response));
-                onMessageEventTest(response);
-                //EventBus.getDefault().postSticky(new MessageEvent(response));
+                onMovieEvent(response);
+                hideProgressBar();
             }
 
             @Override
             public void onFailure(Call<MoviesModel> call, Throwable t) {
-                Log.e("onFailure",t.getLocalizedMessage());
+                txtViewFragmentContentError.setVisibility(View.VISIBLE);
+                hideProgressBar();
+                onError(t.getMessage());
             }
         });
     }
 
-    public void onMessageEventTest(Response<MoviesModel> response) {
+    public void onMovieEvent(Response<MoviesModel> response) {
         MoviesModel moviesModel = response.body();
         List<MoviesModel.ResultsBean> listOfMovies = moviesModel.getResults();
-        /*for (int i=0; i < listOfMovies.size(); i++){
-            //itemsImage.add(Image.POSTER_BASE_IMAGE_URL.concat(listOfMovies.get(i).getBackdrop_path()));
-            itemsImage.add(listOfMovies.get(i));
-        }*/
-        //ImagesAdapter adapter = new ImagesAdapter(getContext(), (ArrayList<String>) itemsImage);
-        
-
-        GlideImageLoader glideImageLoader = new GlideImageLoader(Glide.with(this));
-        ImagesAdapter adapter = new ImagesAdapter(null,(ArrayList<MoviesModel.ResultsBean>) listOfMovies, getContext(), glideImageLoader);
+        GlideImageLoaderRepositoryImp glideImageLoaderRepositoryImp = new GlideImageLoaderRepositoryImp(Glide.with(this));
+        ImagesAdapter adapter = new ImagesAdapter((ArrayList<MoviesModel.ResultsBean>) listOfMovies, getContext(), glideImageLoaderRepositoryImp);
 
         recyclerView.setAdapter(adapter);
-    }
-
-    //@Subscribe(sticky = true, threadMode = ThreadMode.MAIN)
-    @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onMessageEvent(MessageEvent event) {
-        MoviesModel moviesModel = event.message.body();
-        List<MoviesModel.ResultsBean> listOfMovies = moviesModel.getResults();
-        for (int i=0; i < listOfMovies.size(); i++){
-            //itemsImage.add(Image.POSTER_BASE_IMAGE_URL.concat(listOfMovies.get(i).getBackdrop_path()));
-        }
-        //ImagesAdapter adapter = new ImagesAdapter(getContext(), (ArrayList<String>) itemsImage);
-        //ImagesAdapter adapter = new ImagesAdapter(null,(ArrayList<String>) itemsImage, getContext());
-        //recyclerView.setAdapter(adapter);
-    }
-
-    @Override
-    public void onStop() {
-        EventBus.getDefault().unregister(this);
-        super.onStop();
     }
 }

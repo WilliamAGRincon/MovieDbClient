@@ -6,6 +6,17 @@
     android:id="@+id/container">
 
 
+    <TextView
+        android:id="@+id/txtView_fragment_content_error"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:text="@string/fragment_content_internet_error_text"
+        android:visibility="gone"
+        android:textAlignment="center"
+        android:textSize="18sp"/>
+
+
     <ProgressBar
         android:id="@+id/progressBar"
         style="?android:attr/progressBarStyleLarge"

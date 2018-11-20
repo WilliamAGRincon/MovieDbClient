@@ -2,6 +2,6 @@ package com.williamgiraldo.moviedbclient.lib;
 
 import android.widget.ImageView;
 
-public interface ImageLoader {
+public interface GlideImageLoaderRepository {
     void load(ImageView imageView, String URL);
 }

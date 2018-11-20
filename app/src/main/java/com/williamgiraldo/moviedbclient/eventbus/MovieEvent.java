@@ -1,12 +1,12 @@
 package com.williamgiraldo.moviedbclient.eventbus;
 
-import com.williamgiraldo.moviedbclient.models.MoviesModel;
+import com.williamgiraldo.moviedbclient.entities.MoviesModel;
 
 import retrofit2.Response;
 
-public class MessageEvent {
+public class MovieEvent {
     public final Response<MoviesModel> message;
-    public MessageEvent(Response<MoviesModel> response) {
+    public MovieEvent(Response<MoviesModel> response) {
         this.message = response;
     }
 }

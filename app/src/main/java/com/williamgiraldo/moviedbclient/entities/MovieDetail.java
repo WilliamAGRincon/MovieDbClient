@@ -3,7 +3,7 @@ package com.williamgiraldo.moviedbclient.entities;
 public class MovieDetail {
     String title;
     String image;
-    String overview;
+
     int id;
 
     public String getTitle() {
@@ -20,14 +20,6 @@ public class MovieDetail {
 
     public void setImage(String image) {
         this.image = image;
-    }
-
-    public String getOverview() {
-        return overview;
-    }
-
-    public void setOverview(String overview) {
-        this.overview = overview;
     }
 
     public int getId() {
