@@ -28,7 +28,7 @@ A moviedb Api Key is required in order to run the application, get it here: http
 
 ## Preguntas
 * En qué consiste el principio de responsabilidad única? Cuál es su propósito?
-  - Respuesta: De todo el alcance de funciones y tareas que pueda poseer un software, solamente se debe asignar una de las posibles           responsabilidades a una clase.
+  - Respuesta: De todo el alcance de funciones y tareas que pueda poseer un software, solamente se debe asignar una de las posibles           responsabilidades a una clase ó módulo del sistema.
 * Qué características tiene, según su opinión, un “buen” código o código limpio?
   - Respuesta: 
   1) Escrito de un humano para un humano, se escribe código limpio no pensando en la computadora, si no, en la persona que mantendrá a      futuro el código.
